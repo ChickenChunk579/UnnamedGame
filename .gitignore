@@ -9,6 +9,8 @@
 /Builds/
 /Logs/
 /MemoryCaptures/
+/Packages/
+/UserSettings/
 
 /Packages/packages-lock.json
 
@@ -63,3 +65,4 @@ crashlytics-build.properties
 /Assets/Photon/PhotonUnityNetworking/Resources/PhotonServerSettings.asset
 /Assets/Photon/PhotonUnityNetworking/Resources/PhotonServerSettings.asset.meta
 /Packages
+/ProjectSettings/SceneTemplateSettings.json

@@ -28,5 +28,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         print("Joined room");
         PhotonNetwork.LoadLevel("SampleScene");
+        PhotonNetwork.Instantiate("Player", new Vector3(0, 0, 0), Quaternion.identity);
     }
 }
