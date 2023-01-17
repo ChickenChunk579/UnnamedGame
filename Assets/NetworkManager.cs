@@ -27,7 +27,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         print("Joined room");
-        PhotonNetwork.LoadLevel("SampleScene");
-        PhotonNetwork.Instantiate("Player", new Vector3(0, 0, 0), Quaternion.identity);
+        PhotonNetwork.LoadLevel("Lobby");
     }
 }

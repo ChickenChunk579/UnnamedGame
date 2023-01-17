@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Photon.Pun;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviourPun
 {
 
     //Assingables
@@ -48,7 +48,15 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-        if ()
+        print("player");
+        if (!photonView.IsMine)
+        {
+            Destroy(gameObject.GetComponentInChildren<Camera>().gameObject);
+            enabled = false;
+        }
+
+        DontDestroyOnLoad(gameObject);
+        
         rb = GetComponent<Rigidbody>();
     }
 
