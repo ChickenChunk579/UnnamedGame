@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     public Transform orientation;
 
     //Other
-    private Rigidbody rigidbody;
+    private Rigidbody rb;
 
     //Rotation and look
     private float xRotation;
