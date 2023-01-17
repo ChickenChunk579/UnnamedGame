@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
     }
 
     void Start()
@@ -90,11 +90,11 @@ public class PlayerController : MonoBehaviour
     {
         transform.localScale = crouchScale;
         transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-        if (rigidbody.velocity.magnitude > 0.5f)
+        if (GetComponent<Rigidbody>().velocity.magnitude > 0.5f)
         {
             if (grounded)
             {
-                rigidbody.AddForce(orientation.transform.forward * slideForce);
+                GetComponent<Rigidbody>().AddForce(orientation.transform.forward * slideForce);
             }
         }
     }
@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
     private void Movement()
     {
         //Extra gravity
-        rigidbody.AddForce(Vector3.down * Time.deltaTime * 10);
+        GetComponent<Rigidbody>().AddForce(Vector3.down * Time.deltaTime * 10);
 
         //Find actual velocity relative to where player is looking
         Vector2 mag = FindVelRelativeToLook();
@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour
         //If sliding down a ramp, add force down so player stays grounded and also builds speed
         if (crouching && grounded && readyToJump)
         {
-            rigidbody.AddForce(Vector3.down * Time.deltaTime * 3000);
+            GetComponent<Rigidbody>().AddForce(Vector3.down * Time.deltaTime * 3000);
             return;
         }
 
@@ -150,8 +150,8 @@ public class PlayerController : MonoBehaviour
         if (grounded && crouching) multiplierV = 0f;
 
         //Apply forces to move player
-        rigidbody.AddForce(orientation.transform.forward * y * moveSpeed * Time.deltaTime * multiplier * multiplierV);
-        rigidbody.AddForce(orientation.transform.right * x * moveSpeed * Time.deltaTime * multiplier);
+        GetComponent<Rigidbody>().AddForce(orientation.transform.forward * y * moveSpeed * Time.deltaTime * multiplier * multiplierV);
+        GetComponent<Rigidbody>().AddForce(orientation.transform.right * x * moveSpeed * Time.deltaTime * multiplier);
     }
 
     private void Jump()
@@ -161,15 +161,15 @@ public class PlayerController : MonoBehaviour
             readyToJump = false;
 
             //Add jump forces
-            rigidbody.AddForce(Vector2.up * jumpForce * 1.5f);
-            rigidbody.AddForce(normalVector * jumpForce * 0.5f);
+            GetComponent<Rigidbody>().AddForce(Vector2.up * jumpForce * 1.5f);
+            GetComponent<Rigidbody>().AddForce(normalVector * jumpForce * 0.5f);
 
             //If jumping while falling, reset y velocity.
-            Vector3 vel = rigidbody.velocity;
-            if (rigidbody.velocity.y < 0.5f)
-                rigidbody.velocity = new Vector3(vel.x, 0, vel.z);
-            else if (rigidbody.velocity.y > 0)
-                rigidbody.velocity = new Vector3(vel.x, vel.y / 2, vel.z);
+            Vector3 vel = GetComponent<Rigidbody>().velocity;
+            if (GetComponent<Rigidbody>().velocity.y < 0.5f)
+                GetComponent<Rigidbody>().velocity = new Vector3(vel.x, 0, vel.z);
+            else if (GetComponent<Rigidbody>().velocity.y > 0)
+                GetComponent<Rigidbody>().velocity = new Vector3(vel.x, vel.y / 2, vel.z);
 
             Invoke(nameof(ResetJump), jumpCooldown);
         }
@@ -206,26 +206,26 @@ public class PlayerController : MonoBehaviour
         //Slow down sliding
         if (crouching)
         {
-            rigidbody.AddForce(moveSpeed * Time.deltaTime * -rigidbody.velocity.normalized * slideCounterMovement);
+            GetComponent<Rigidbody>().AddForce(moveSpeed * Time.deltaTime * -GetComponent<Rigidbody>().velocity.normalized * slideCounterMovement);
             return;
         }
 
         //Counter movement
         if (Math.Abs(mag.x) > threshold && Math.Abs(x) < 0.05f || (mag.x < -threshold && x > 0) || (mag.x > threshold && x < 0))
         {
-            rigidbody.AddForce(moveSpeed * orientation.transform.right * Time.deltaTime * -mag.x * counterMovement);
+            GetComponent<Rigidbody>().AddForce(moveSpeed * orientation.transform.right * Time.deltaTime * -mag.x * counterMovement);
         }
         if (Math.Abs(mag.y) > threshold && Math.Abs(y) < 0.05f || (mag.y < -threshold && y > 0) || (mag.y > threshold && y < 0))
         {
-            rigidbody.AddForce(moveSpeed * orientation.transform.forward * Time.deltaTime * -mag.y * counterMovement);
+            GetComponent<Rigidbody>().AddForce(moveSpeed * orientation.transform.forward * Time.deltaTime * -mag.y * counterMovement);
         }
 
         //Limit diagonal running. This will also cause a full stop if sliding fast and un-crouching, so not optimal.
-        if (Mathf.Sqrt((Mathf.Pow(rigidbody.velocity.x, 2) + Mathf.Pow(rigidbody.velocity.z, 2))) > maxSpeed)
+        if (Mathf.Sqrt((Mathf.Pow(GetComponent<Rigidbody>().velocity.x, 2) + Mathf.Pow(GetComponent<Rigidbody>().velocity.z, 2))) > maxSpeed)
         {
-            float fallspeed = rigidbody.velocity.y;
-            Vector3 n = rigidbody.velocity.normalized * maxSpeed;
-            rigidbody.velocity = new Vector3(n.x, fallspeed, n.z);
+            float fallspeed = GetComponent<Rigidbody>().velocity.y;
+            Vector3 n = GetComponent<Rigidbody>().velocity.normalized * maxSpeed;
+            GetComponent<Rigidbody>().velocity = new Vector3(n.x, fallspeed, n.z);
         }
     }
 
@@ -237,12 +237,12 @@ public class PlayerController : MonoBehaviour
     public Vector2 FindVelRelativeToLook()
     {
         float lookAngle = orientation.transform.eulerAngles.y;
-        float moveAngle = Mathf.Atan2(rigidbody.velocity.x, rigidbody.velocity.z) * Mathf.Rad2Deg;
+        float moveAngle = Mathf.Atan2(GetComponent<Rigidbody>().velocity.x, GetComponent<Rigidbody>().velocity.z) * Mathf.Rad2Deg;
 
         float u = Mathf.DeltaAngle(lookAngle, moveAngle);
         float v = 90 - u;
 
-        float magnitue = rigidbody.velocity.magnitude;
+        float magnitue = GetComponent<Rigidbody>().velocity.magnitude;
         float yMag = magnitue * Mathf.Cos(u * Mathf.Deg2Rad);
         float xMag = magnitue * Mathf.Cos(v * Mathf.Deg2Rad);
 
