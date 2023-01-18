@@ -8,9 +8,11 @@ public class PlayerController : MonoBehaviourPun
     //Assingables
     public Transform playerCam;
     public Transform orientation;
-
+    public Transform model;
     //Other
     private Rigidbody rb;
+
+    public Animator animator;
 
     //Rotation and look
     private float xRotation;
@@ -46,18 +48,22 @@ public class PlayerController : MonoBehaviourPun
     private Vector3 normalVector = Vector3.up;
     private Vector3 wallNormalVector;
 
+    bool doStuff = true;
+
     void Awake()
     {
         print("player");
         if (!photonView.IsMine)
         {
             Destroy(gameObject.GetComponentInChildren<Camera>().gameObject);
-            enabled = false;
+            doStuff = false;
         }
 
         DontDestroyOnLoad(gameObject);
         
         rb = GetComponent<Rigidbody>();
+
+        lastPos = transform.position;
     }
 
     void Start()
@@ -67,16 +73,34 @@ public class PlayerController : MonoBehaviourPun
         Cursor.visible = false;
     }
 
-
+    Vector3 lastPos;
     private void FixedUpdate()
     {
-        Movement();
+        if (doStuff)
+        {
+            Movement();
+        }
+
+        if (lastPos != transform.position)
+        {
+            animator.SetBool("Running", true);
+        } else
+        {
+            animator.SetBool("Running", false);
+        }
+        
+
+
+        lastPos = transform.position;
     }
 
     private void Update()
     {
-        MyInput();
-        Look();
+        if (doStuff)
+        {
+            MyInput();
+            Look();
+        }
     }
 
     /// <summary>
@@ -162,6 +186,8 @@ public class PlayerController : MonoBehaviourPun
         //Apply forces to move player
         GetComponent<Rigidbody>().AddForce(orientation.transform.forward * y * moveSpeed * Time.deltaTime * multiplier * multiplierV);
         GetComponent<Rigidbody>().AddForce(orientation.transform.right * x * moveSpeed * Time.deltaTime * multiplier);
+
+        model.localRotation = Quaternion.LookRotation(orientation.forward, transform.up);
     }
 
     private void Jump()
