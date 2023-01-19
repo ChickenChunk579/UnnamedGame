@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Photon.Pun;
 
-public class PlayerController : MonoBehaviourPun
+public class PlayerController : MonoBehaviourPun, IPunObservable
 {
 
     //Assingables
@@ -81,8 +81,9 @@ public class PlayerController : MonoBehaviourPun
             Movement();
         }
 
-        if (lastPos != transform.position)
+        if (lastPos != transform.position && grounded)
         {
+            
             animator.SetBool("Running", true);
         } else
         {
@@ -188,6 +189,7 @@ public class PlayerController : MonoBehaviourPun
         GetComponent<Rigidbody>().AddForce(orientation.transform.right * x * moveSpeed * Time.deltaTime * multiplier);
 
         model.localRotation = Quaternion.LookRotation(orientation.forward, transform.up);
+       
     }
 
     private void Jump()
@@ -330,4 +332,16 @@ public class PlayerController : MonoBehaviourPun
         grounded = false;
     }
 
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        print("serializeView");
+        if (stream.IsWriting)
+        {
+            stream.SendNext(model.localRotation);
+        }
+        if (stream.IsReading)
+        {
+            model.localRotation = (Quaternion)stream.ReceiveNext();
+        }
+    }
 }
